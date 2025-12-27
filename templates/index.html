@@ -284,6 +284,38 @@
             .swiper-button-next, .swiper-button-prev { display: none !important; }
             .slide-badge { font-size: 2rem; bottom: 0.5rem; right: 1rem; }
         }
+
+        /* --- SECURITY: PREVENT COPYING & DRAGGING --- */
+        body {
+            -webkit-user-select: none; /* Chrome/Safari */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE10+ */
+            user-select: none;         /* Standard */
+        }
+
+        /* Allow selecting text only in input fields if you have a contact form */
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: auto; /* Keeps click events for sliders working */
+        }
+
+        /* --- SECURITY: HIDE CONTENT ON PRINT --- */
+        @media print {
+            html, body {
+                display: none !important;  /* Hides everything */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -556,7 +588,52 @@
         var processSwiper = createSwiper(".processSwiper");
         var socialSwiper = createSwiper(".socialSwiper");
         var archiveSwiper = createSwiper(".archiveSwiper");
+
+
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // 2. Disable Keyboard Shortcuts for Inspect Element & View Source
+        document.onkeydown = function(e) {
+            // F12
+            if(e.keyCode == 123) {
+                return false;
+            }
+            // Ctrl+Shift+I (Inspect)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+C (Inspect Element)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+Shift+J (Console)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                return false;
+            }
+            // Ctrl+S (Save Page)
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) {
+                return false;
+            }
+        }
+
+
+
+        // 4. (Optional) Blur Screen when Window Loses Focus
+        // This deters users from switching to a "Snipping Tool"
+        window.addEventListener('blur', function() {
+            document.body.style.filter = 'blur(50px)';
+        });
+
+        window.addEventListener('focus', function() {
+            document.body.style.filter = 'none';
+        });
     </script>
+
 </body>
 </html>
-
