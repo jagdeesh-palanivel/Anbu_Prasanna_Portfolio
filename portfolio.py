@@ -153,9 +153,9 @@ def home():
 
     # --- SKILLS ---
     skills = {
-        "Design & Tech": ["Adobe Photoshop", "CorelDRAW", "3D CAD Illustration", "Procreate", "Visual Merchandising"],
+        "Design & Tech": ["Adobe Photoshop", "CorelDRAW", "3D CAD Illustration"],
         "Craftsmanship": ["Pattern Making", "Garment Construction", "Aari Embroidery", "Glass Art", "Needlework"],
-        "Strategy": ["Social Media Management", "Marketing", "Trend Research", "Styling", "Time Study"]
+        "Strategy": [ "Visual Merchandising", "Social Media Management", "Marketing", "Trend Research", "Styling", "Time Study"]
     }
 
     return render_template('index.html',
@@ -172,5 +172,6 @@ def home():
 if __name__ == '__main__':
 
     app.run(debug=True)
+
 
 
