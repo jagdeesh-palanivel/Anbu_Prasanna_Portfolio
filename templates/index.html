@@ -2,7 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta name="description" content="Portfolio of {{ profile.name }} - Fashion Designer specializing in Sustainable & Avant-Garde Menswear. View collections, sketches, and resume.">
+    <meta name="keywords" content="Fashion Portfolio, Anbu Prasanna, Menswear Designer, Sustainable Fashion, CLO3D, Fashion Stylist, Creative Director">
+    <meta name="author" content="{{ profile.name }}">
+    <meta property="og:title" content="{{ profile.name }} | Fashion Portfolio">
+    <meta property="og:description" content="Exploring the intersection of shadow and sunlight through textile and form.">
+    <meta property="og:image" content="{{ profile.photo }}">
+    <meta property="og:type" content="website">
+
     <title>{{ profile.name }} | Portfolio</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,289 +24,280 @@
     <style>
         /* --- 1. THEME: VELVET PARCHMENT (Beige & Maroon) --- */
         :root {
-            /* Backgrounds - Warm & Light */
-            --bg-body: #FDFBF7;       /* Cream / Off-White */
-            --bg-layer: #F0EAD6;      /* Eggshell / Beige (Contrast Layer) */
-            --bg-card: #FFFFFF;       /* Pure White (Cards) */
-
-            /* Typography */
-            --text-main: #2C2C2C;     /* Dark Charcoal */
-            --text-muted: #5F5F5F;    /* Medium Grey */
-
-            /* Accents */
-            --maroon: #800020;        /* Deep Burgundy/Maroon */
-            --maroon-dim: #A52A2A;    /* Lighter Maroon for borders */
-
-            /* Dimensions */
+            --bg-body: #FDFBF7;       /* Cream */
+            --bg-layer: #F0EAD6;      /* Eggshell */
+            --bg-card: #FFFFFF;       /* White */
+            --text-main: #2C2C2C;     /* Charcoal */
+            --text-muted: #5F5F5F;    /* Grey */
+            --maroon: #800020;        /* Burgundy */
+            --maroon-dim: #A52A2A;    /* Border Maroon */
             --container: 96%;
             --max-w: 1900px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Hide default cursor for custom one */ }
 
-        body {
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
             background-color: var(--bg-body);
             color: var(--text-main);
             font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
             line-height: 1.7;
         }
 
+        /* Re-enable default cursor for mobile/touch devices */
+        @media (hover: none) { * { cursor: auto !important; } }
+
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.5px; color: var(--text-main); }
         a { text-decoration: none; color: inherit; transition: 0.4s ease; }
-        img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* 6. MICRO-INTERACTIONS: Image Zoom on Hover */
+        img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .swiper-slide:hover img, .project-card:hover img, .hero-img:hover img { transform: scale(1.03); }
 
         /* UTILS */
         .container { width: var(--container); max-width: var(--max-w); margin: 0 auto; }
-        .section-pad { padding: 8rem 0; border-bottom: 1px solid rgba(128, 0, 32, 0.1); } /* Light Maroon divider */
+        .section-pad { padding: 8rem 0; border-bottom: 1px solid rgba(128, 0, 32, 0.1); }
         .text-center { text-align: center; }
-
-        /* Maroon Accent Text */
-        .text-maroon {
-            color: var(--maroon);
-        }
-
         .maroon-accent { color: var(--maroon); }
+
+        /* --- 6. CUSTOM CURSOR --- */
+        .cursor-dot {
+            width: 12px; height: 12px; background: var(--maroon);
+            border-radius: 50%; position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: multiply;
+        }
+        .cursor-outline {
+            width: 40px; height: 40px; border: 1px solid rgba(128, 0, 32, 0.5);
+            border-radius: 50%; position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease-out;
+        }
+        /* Hide custom cursor on mobile */
+        @media (hover: none) { .cursor-dot, .cursor-outline { display: none; } }
+        /* Cursor Hover State */
+        body.hovering .cursor-dot { width: 20px; height: 20px; opacity: 0.5; }
+        body.hovering .cursor-outline { width: 60px; height: 60px; border-color: var(--maroon); }
+
+        /* --- 4. STICKY NAVIGATION BAR --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            padding: 1rem 3%; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(253, 251, 247, 0.85); /* Cream Glass */
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(128, 0, 32, 0.05);
+            transition: 0.3s;
+        }
+        .nav-logo { font-family: 'Playfair Display'; font-weight: 600; font-size: 1.5rem; color: var(--maroon); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-link { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 1px; bottom: -2px; left: 0;
+            background: var(--maroon); transition: 0.3s;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .btn-nav {
+            padding: 0.5rem 1.5rem; border: 1px solid var(--maroon); color: var(--maroon);
+            text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-nav:hover { background: var(--maroon); color: white; }
 
 
         /* --- HERO SECTION --- */
         .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 2rem 5%;
+            min-height: 100vh; display: flex; align-items: center; justify-content: space-between;
+            padding: 6rem 5% 2rem 5%; /* Top padding for Navbar */
             position: relative;
-            /* Radial Gradient: Center light, edges slightly darker beige */
             background: radial-gradient(circle at 20% 50%, #FDFBF7 0%, #E8E4D8 70%);
         }
-
         .hero-text { width: 60%; z-index: 2; padding-right: 2rem; }
-
         .status-badge {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(128, 0, 32, 0.05); /* Very faint maroon fill */
-            border: 1px solid var(--maroon);
+            background: rgba(128, 0, 32, 0.05); border: 1px solid var(--maroon);
             padding: 0.5rem 1rem; border-radius: 50px;
             font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
             margin-bottom: 2rem; color: var(--maroon); backdrop-filter: blur(5px);
         }
         .status-dot { width: 6px; height: 6px; background: var(--maroon); border-radius: 50%; }
-
-        .hero-title {
-            font-size: 6rem; line-height: 0.9; margin-bottom: 2rem;
-            color: var(--text-main); letter-spacing: -3px;
-        }
-
-        /* Specific styling for the Last Name */
-        .hero-title span {
-            font-style: italic;
-            font-weight: 400;
-            color: var(--maroon); /* LAST NAME IN MAROON */
-        }
-
+        .hero-title { font-size: 6rem; line-height: 0.9; margin-bottom: 2rem; color: var(--text-main); letter-spacing: -3px; }
+        .hero-title span { font-style: italic; font-weight: 400; color: var(--maroon); white-space: nowrap; }
         .hero-degree {
             font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--text-muted);
             border-left: 1px solid var(--maroon); padding-left: 1.5rem;
             font-family: 'Playfair Display', serif; letter-spacing: 1px;
         }
-
         .hero-desc { color: var(--text-muted); font-size: 1.3rem; max-width: 500px; margin-bottom: 4rem; font-weight: 300; }
-
-        /* Luxury Button Style - Maroon */
         .btn-hero {
             background: transparent; color: var(--maroon);
             padding: 1rem 3rem; font-size: 0.8rem; text-transform: uppercase;
             letter-spacing: 3px; position: relative; overflow: hidden; display: inline-block;
-            border: 1px solid var(--maroon);
-            font-weight: 600;
+            border: 1px solid var(--maroon); font-weight: 600;
         }
         .btn-hero:hover { background: var(--maroon); color: white; box-shadow: 0 5px 20px rgba(128, 0, 32, 0.2); }
-
         .hero-img-wrap { width: 40%; height: 80vh; position: relative; }
         .hero-img {
-            width: 110%; height: 110%;
-            border-radius: 5px 200px 5px 5px; /* Arch */
+            width: 110%; height: 110%; border-radius: 5px 200px 5px 5px; /* Arch Style */
             overflow: hidden; position: relative; z-index: 1;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            border: 2px solid var(--maroon);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 2px solid var(--maroon);
         }
-
         .scroll-hint {
-            position: absolute; bottom: 3rem; left: 5%;
+            position: absolute; bottom: 3rem; left: 1.5rem;
             display: flex; align-items: center; gap: 1rem;
             font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
             color: var(--maroon); transform: rotate(-90deg); transform-origin: left;
         }
         .scroll-line { width: 40px; height: 1px; background: var(--maroon); }
 
-
         /* --- SWIPER SHARED STYLES --- */
-        .swiper { width: 100%; height: 70vh; padding-top: 30px; padding-bottom: 60px; }
+        .swiper { width: 100%; height: 70vh; padding-top: 30px; padding-bottom: 60px; overflow: hidden; }
         .swiper-slide {
             background-position: center; background-size: cover; width: 85%; height: 100%;
-            background: var(--bg-card); /* White Card */
-            opacity: 0.5; transform: scale(0.9); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--bg-card); opacity: 0.5; transform: scale(0.9); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden;
-            border: 1px solid rgba(128, 0, 32, 0.1);
+            border: 1px solid rgba(128, 0, 32, 0.1); position: relative;
         }
-        .swiper-slide-active {
-            opacity: 1; transform: scale(1); z-index: 10;
-            border: 0.2px solid var(--maroon);
-        }
+        .swiper-slide-active { opacity: 1; transform: scale(1); z-index: 10; border: 0.2px solid var(--maroon); box-shadow: 0 20px 40px rgba(128,0,32,0.1); }
         .swiper-slide img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
-
-        /* Minimalist Nav Buttons */
+        /* NUMBER BADGE */
+        .slide-badge {
+            position: absolute; bottom: 1rem; right: 1.5rem;
+            font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700;
+            color: var(--maroon); opacity: 0.2; line-height: 1; pointer-events: none; transition: 0.3s;
+        }
+        .swiper-slide-active .slide-badge { opacity: 1; }
         .swiper-button-next, .swiper-button-prev {
             color: var(--maroon); background: rgba(255,255,255,0.8); width: 60px; height: 60px;
-            border: 1px solid var(--maroon); backdrop-filter: blur(5px);
+            border: 1px solid var(--maroon); backdrop-filter: blur(5px); transition: 0.3s;
         }
         .swiper-button-next:hover, .swiper-button-prev:hover { background: var(--maroon); color: white; }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 1.2rem; }
         @media (min-width: 900px) { .swiper-slide { width: 45%; } }
 
-
-        /* --- PROJECTS SECTION (Cream) --- */
+        /* --- SECTIONS --- */
         .project-section { background: var(--bg-body); }
         .project-card { margin-bottom: 12rem; border-bottom: 1px solid rgba(128, 0, 32, 0.1); padding-bottom: 4rem; }
-        .project-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 4rem; padding: 0 1rem;
-        }
+        .project-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; padding: 0 1rem; }
         .project-title { font-size: 4rem; margin: 0; color: var(--text-main); line-height: 1; }
 
-
-        /* --- RESUME SECTION (Beige Layer) --- */
         .resume-section { background: var(--bg-layer); }
         .resume-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 6rem; }
-
-        .resume-block {
-            margin-bottom: 3rem;
-            padding-left: 2rem;
-            border-left: 1px solid var(--maroon-dim);
-            position: relative;
-        }
-        /* Add a dot to the timeline */
-        .resume-block::before {
-            content: ''; position: absolute; left: -5px; top: 0;
-            width: 9px; height: 9px; background: var(--maroon); border-radius: 50%;
-        }
-
-        .role { font-size: 1.4rem; font-weight: 400; color: var(--text-main); font-family: 'Playfair Display'; margin-bottom: 0.5rem; }
+        .resume-block { margin-bottom: 3rem; padding-left: 2rem; border-left: 1px solid var(--maroon-dim); position: relative; }
+        .resume-block::before { content: ''; position: absolute; left: -5px; top: 0; width: 9px; height: 9px; background: var(--maroon); border-radius: 50%; }
+        .role { font-size: 1.4rem; font-weight: 400; font-family: 'Playfair Display'; margin-bottom: 0.5rem; }
         .org { font-size: 0.9rem; font-weight: 600; color: var(--maroon); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 0.5rem;}
         .date { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; display: block; }
 
-
-        /* --- SKILLS SECTION (Cream) --- */
+        /* 3. SKILL TAGS (Visuals) */
         .skills-section { background: var(--bg-body); }
         .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4rem; text-align: center; }
-        .skill-group h4 {
-            font-size: 1.5rem; color: var(--maroon); margin-bottom: 2rem;
-            display: inline-block; font-family: 'Playfair Display'; font-style: italic;
+        .skill-group h4 { font-size: 1.5rem; color: var(--maroon); margin-bottom: 2rem; display: inline-block; font-family: 'Playfair Display'; font-style: italic; }
+        .skill-list {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem;
         }
         .skill-list span {
-            display: block; padding: 0.8rem; font-weight: 300;
-            letter-spacing: 1px; color: var(--text-muted);
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid rgba(128,0,32,0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: 0.3s;
+            background: white;
         }
-        .skill-list span:last-child { border-bottom: none; }
+        /* Skill Tag Hover Interaction */
+        .skill-list span:hover {
+            background: var(--maroon);
+            color: white;
+            border-color: var(--maroon);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(128,0,32,0.2);
+        }
 
-
-        /* --- SOCIAL MEDIA (Beige Layer) --- */
         .social-section { background: var(--bg-layer); }
-        .socialSwiper { width: 100%; height: 60vh; padding-top: 20px; padding-bottom: 50px; }
-        .social-overlay {
-            position: absolute; inset: 0; background: rgba(128, 0, 32, 0.8); /* Maroon Overlay */
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: 0.3s;
-        }
-        .socialSwiper .swiper-slide:hover .social-overlay { opacity: 1; }
-        .social-txt {
-            color: #fff; border: 1px solid #fff;
-            padding: 1rem 2rem; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase;
-        }
+        .socialSwiper { width: 100%; height: 60vh; }
+        .social-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(128,0,32,0.1), transparent); pointer-events: none; }
         @media (min-width: 900px) { .socialSwiper .swiper-slide { width: 30%; } }
 
-
-        /* --- PROCESS & ILLUSTRATION (Cream) --- */
         .process-section { background: var(--bg-body); }
         .processSwiper .swiper-slide img { background: #fff; }
         @media (min-width: 900px) { .processSwiper .swiper-slide { width: 40%; } }
 
-
-        /* --- PDF PORTFOLIOS (Beige Layer) --- */
         .pdf-section { background: var(--bg-layer); }
         .pdf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
-        .pdf-card {
-            border: 1px solid rgba(128, 0, 32, 0.1); padding: 4rem; text-align: center; background: #FFF;
-            transition: 0.4s; position: relative;
-        }
-        .pdf-card:hover { border-color: var(--maroon); transform: translateY(-10px); background: #fff; box-shadow: 0 15px 30px rgba(128, 0, 32, 0.1); }
+        .pdf-card { border: 1px solid rgba(128, 0, 32, 0.1); padding: 4rem; text-align: center; background: #FFF; transition: 0.4s; }
+        .pdf-card:hover { border-color: var(--maroon); transform: translateY(-10px); box-shadow: 0 15px 30px rgba(128, 0, 32, 0.1); }
         .pdf-icon { margin-bottom: 1.5rem; color: var(--maroon); opacity: 0.8; }
-        .pdf-title { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); }
+        .pdf-title { font-size: 2rem; margin-bottom: 1rem; }
         .pdf-desc { color: var(--text-muted); margin-bottom: 2rem; max-width: 300px; margin-left: auto; margin-right: auto; }
-        .btn-pdf {
-            display: inline-block; border: 1px solid var(--maroon); color: var(--maroon);
-            padding: 10px 20px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px;
-            transition: 0.3s; font-weight: 600;
-        }
+        .btn-pdf { display: inline-block; border: 1px solid var(--maroon); color: var(--maroon); padding: 10px 20px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; font-weight: 600; }
         .btn-pdf:hover { background: var(--maroon); color: white; border-color: var(--maroon); }
 
-
-        /* --- THE ARCHIVE (Cream) --- */
         .archive-section { background: var(--bg-body); }
-        .archiveSwiper { width: 100%; height: 60vh; padding-top: 20px; padding-bottom: 50px; }
-        .archiveSwiper .swiper-slide {
-            width: 85%; height: 100%; background: #fff;
-            opacity: 0.5; transform: scale(0.9); transition: all 0.4s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow: hidden;
-        }
-        .archiveSwiper .swiper-slide-active {
-            opacity: 1; transform: scale(1); z-index: 10;
-            box-shadow: 0 20px 50px rgba(128, 0, 32, 0.15); border: 1px solid var(--maroon);
-        }
-        .archiveSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
-
-        .archive-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, rgba(44, 44, 44, 0.9), transparent);
-            padding: 2rem; display: flex; justify-content: space-between; align-items: flex-end;
-        }
+        .archiveSwiper { width: 100%; height: 60vh; }
+        .archive-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(44, 44, 44, 0.9), transparent); padding: 2rem; display: flex; justify-content: space-between; align-items: flex-end; }
         .archive-title { font-family: 'Playfair Display'; font-size: 1.5rem; color: #fff; }
-        .archive-num { font-size: 0.8rem; color: #fff; font-weight: 600; letter-spacing: 2px; }
         @media (min-width: 900px) { .archiveSwiper .swiper-slide { width: 40%; } }
 
-
-        /* --- FOOTER --- */
         footer { padding: 6rem 0; text-align: center; background: var(--bg-body); border-top: 1px solid rgba(128, 0, 32, 0.1); }
         .footer-links { display: flex; justify-content: center; gap: 3rem; margin: 3rem 0; }
-        .footer-icon {
-            font-size: 1rem; display: flex; align-items: center; gap: 0.5rem;
-            color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;
-        }
+        .footer-icon { font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .footer-icon:hover { color: var(--maroon); }
 
-        /* MOBILE RESPONSIVENESS */
+        /* =========================================
+           MOBILE OPTIMIZATION (Max-Width 900px)
+           ========================================= */
         @media (max-width: 900px) {
-            .hero { flex-direction: column; padding-top: 8rem; height: auto; text-align: center; }
-            .hero-text { width: 100%; padding-right: 0; margin-bottom: 4rem; }
-            .hero-title { font-size: 3.5rem; }
-            .hero-degree { border-left: none; border-bottom: 1px solid var(--maroon); padding-left: 0; padding-bottom: 1rem; display: inline-block; }
-            .hero-desc { margin: 0 auto 2rem auto; }
-            .hero-img-wrap { width: 100%; height: 50vh; }
+            .section-pad { padding: 4rem 0; }
+            .container { width: 90%; }
+
+            /* Navbar Mobile Tweaks */
+            .navbar { padding: 1rem; }
+            .nav-links { display: none; } /* Hide Desktop Links */
+            /* We keep the btn-nav (Contact) visible or simplified */
+
+            .hero { flex-direction: column; padding-top: 7rem; padding-bottom: 2rem; height: auto; text-align: center; justify-content: flex-start; }
+            .hero-text { width: 100%; padding-right: 0; margin-bottom: 3rem; }
+            .hero-title { font-size: 2.8rem; letter-spacing: -1px; line-height: 1.1; }
+            .hero-title span { display: inline-block; white-space: nowrap; }
+            .hero-degree { font-size: 1.1rem; border-left: none; border-bottom: 1px solid var(--maroon); padding-left: 0; padding-bottom: 0.8rem; display: inline-block; }
+            .hero-desc { margin: 0 auto 2rem auto; font-size: 1rem; }
+            .hero-img-wrap { width: 100%;max-width: 325px; height: 50vh; margin-right: 9%;}
             .hero-img { border-radius: 150px 150px 0 0; }
-            .scroll-hint { display: none; }
+            .scroll-hint, .float-tag { display: none; }
 
-            .project-header { flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
-            .project-title { font-size: 3rem; }
+            .project-header { flex-direction: column; align-items: center; text-align: center; gap: 1rem; margin-bottom: 2rem; }
+            .project-title { font-size: 2.2rem; }
+            .resume-wrap, .skills-grid, .social-grid, .archive-grid, .pdf-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+            .resume-block { padding-left: 1.5rem; margin-bottom: 2rem; }
 
-            /* Grid Collapse */
-            .resume-wrap, .skills-grid, .social-grid, .archive-grid, .pdf-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .swiper, .processSwiper, .socialSwiper, .archiveSwiper { height: 40vh; }
-            .section-pad { padding: 5rem 0; }
+            .footer-links { flex-direction: column; gap: 1.5rem; margin: 3rem 0; padding: 0; }
+            .footer-icon { flex-direction: column; gap: 0.5rem; text-align: center; word-break: break-word; font-size: 0.9rem; }
+
+            .swiper, .processSwiper, .socialSwiper, .archiveSwiper { height: 45vh; padding-bottom: 30px; }
+            .swiper-button-next, .swiper-button-prev { display: none !important; }
+            .swiper-slide { width: 85% !important; left: 0; }
+            .slide-badge { font-size: 2rem; bottom: 0.5rem; right: 1rem; }
         }
     </style>
 </head>
 <body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <nav class="navbar">
+        <div class="nav-logo">Designer Portfolio</div>
+        <div class="nav-links">
+            <a href="#projects" class="nav-link">Work</a>
+            <a href="#career" class="nav-link">Career</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
 
     <header class="hero">
         <div class="scroll-hint">
@@ -308,7 +308,7 @@
                 <div class="status-dot"></div> Open to work
             </div>
             <h1 class="hero-title">
-                {{ profile.name }} <span>{{ profile.last_name }}</span> <br>
+                {{ profile.name }} <span>{{ profile.last_name }}</span>
             </h1>
             <div class="hero-degree">{{ profile.degree }}</div>
             <p class="hero-desc">{{ profile.tagline }}</p>
@@ -321,7 +321,7 @@
         </div>
     </header>
 
-    <section class="section-pad project-section">
+    <section id="projects" class="section-pad project-section">
         <div class="container">
             <h2 class="text-center" style="font-size: 3rem; margin-bottom: 6rem; color: var(--text-main);">Selected Collections</h2>
 
@@ -344,6 +344,7 @@
                         {% for img in project.images %}
                         <div class="swiper-slide">
                             <img src="{{ img }}" alt="Fashion Project">
+                            <div class="slide-badge">0{{ loop.index }}</div>
                         </div>
                         {% endfor %}
                     </div>
@@ -356,7 +357,7 @@
         </div>
     </section>
 
-    <section class="section-pad resume-section">
+    <section id="career" class="section-pad resume-section">
         <div class="container">
             <h2 class="text-center" style="margin-bottom: 6rem; color: var(--text-main);">Career Timeline</h2>
             <div class="resume-wrap">
@@ -414,6 +415,8 @@
                     {% for post in social_posts %}
                     <div class="swiper-slide">
                         <img src="{{ post.img }}" alt="{{ post.title }}">
+                        <div class="social-overlay"></div>
+                        <div class="slide-badge">0{{ loop.index }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -432,6 +435,7 @@
                     {% for item in illustrations %}
                     <div class="swiper-slide">
                         <img src="{{ item.img }}" alt="{{ item.title }}">
+                        <div class="slide-badge">0{{ loop.index }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -469,8 +473,8 @@
                         <img src="{{ item.img }}" alt="{{ item.title }}">
                         <div class="archive-overlay">
                             <span class="archive-title">{{ item.title }}</span>
-                            <span class="archive-num">0{{ loop.index }}</span>
                         </div>
+                        <div class="slide-badge">0{{ loop.index }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -485,10 +489,10 @@
             <h2 class="maroon-accent" style="font-size: 3rem;">Let's Create Something.</h2>
             <div class="footer-links">
                 <a href="{{ profile.linkedin_url }}" target="_blank" class="footer-icon">
-                    <i data-feather="linkedin"></i> LinkedIn: Anbu Prasanna L
+                    <i data-feather="linkedin"></i> Anbu Prasanna L
                 </a>
                 <a href="mailto:{{ profile.email }}" class="footer-icon">
-                    <i data-feather="mail"></i> Email: anbuprasannal435@gmail.com
+                    <i data-feather="mail"></i> anbuprasannal435@gmail.com
                 </a>
             </div>
             <p style="color: var(--text-muted); font-size: 1.2rem;">&copy; 2025 Anbu Prasanna. All Rights Reserved.</p>
@@ -501,45 +505,57 @@
         AOS.init({ duration: 800, once: true });
         feather.replace();
 
-        // Projects Swiper
-        var swiper = new Swiper(".mySwiper", {
-            slidesPerView: "auto",
-            centeredSlides: true,
-            spaceBetween: 30,
-            loop: false,
-            autoplay: { delay: 3500, disableOnInteraction: false },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        });
+        // Custom Cursor Logic
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
 
-        // Process Swiper
-        var processSwiper = new Swiper(".processSwiper", {
-            slidesPerView: "auto",
-            centeredSlides: true,
-            spaceBetween: 30,
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        });
+        // Only active on non-touch devices
+        if (window.matchMedia("(hover: hover)").matches) {
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
 
-        // Social Media Swiper
-        var socialSwiper = new Swiper(".socialSwiper", {
-            slidesPerView: "auto",
-            centeredSlides: true,
-            spaceBetween: 30,
-            loop: false,
-            autoplay: { delay: 4000, disableOnInteraction: false },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        });
+                // Move dot instantly
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
 
-        // Archive Swiper
-        var archiveSwiper = new Swiper(".archiveSwiper", {
-            slidesPerView: "auto",
-            centeredSlides: true,
-            spaceBetween: 30,
-            loop: false,
-            autoplay: { delay: 3500, disableOnInteraction: false },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-        });
+                // Move outline with slight delay for smooth effect
+                cursorOutline.style.left = `${posX}px`;
+                cursorOutline.style.top = `${posY}px`;
+
+                // Add hovering class when over clickable elements
+                const target = e.target;
+                if (target.matches('a, button, img, .swiper-slide, .pdf-card, span')) {
+                    document.body.classList.add('hovering');
+                } else {
+                    document.body.classList.remove('hovering');
+                }
+            });
+        }
+
+        // Swiper Logic
+        function createSwiper(selector, spaceBetweenMobile = 15) {
+            return new Swiper(selector, {
+                slidesPerView: "auto",
+                centeredSlides: true,
+                spaceBetween: 30,
+                loop: false,
+                autoplay: false,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                breakpoints: {
+                    320: { spaceBetween: spaceBetweenMobile },
+                    900: { spaceBetween: 30 }
+                }
+            });
+        }
+
+        var swiper = createSwiper(".mySwiper");
+        var processSwiper = createSwiper(".processSwiper");
+        var socialSwiper = createSwiper(".socialSwiper");
+        var archiveSwiper = createSwiper(".archiveSwiper");
     </script>
 </body>
 </html>
